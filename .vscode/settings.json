@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Rubix Cube - Unity 6.sln"
+    "dotnet.defaultSolution": "RubixCube.sln"
 }
