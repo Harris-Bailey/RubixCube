@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace RubixCube.Core {
 
@@ -670,7 +671,7 @@ namespace RubixCube.Core {
         
         static CFOPSolver() {
             // this file contains all the last layer algorithms provided in https://docs.google.com/spreadsheets/d/1TkCEyg4TJRM_4KJv1lPDctvSiSAtUNMm/
-            string lastLayerRelativePath = "Assets/Scripts/Core/LastLayerAlgorithms.txt";
+            string lastLayerRelativePath = $"{Application.streamingAssetsPath}/LastLayerAlgorithms.txt";
             lastLayerMoveSequences = File.ReadLines(lastLayerRelativePath).ToArray();
         }
         
