@@ -1,30 +1,103 @@
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 
 public static class SettingsSaveLoad {
-    public static Color CenterOne { get; private set; }
-    public static Color CenterTwo { get; private set; }
-    public static Color CenterThree { get; private set; }
-    public static Color CenterFour { get; private set; }
-    public static Color CenterFive { get; private set; }
-    public static Color CenterSix { get; private set; }
-    public static int FieldOfView { get; private set; }
-    public static int AnimationDuration { get; private set; }
-    public static int MusicVolume { get; private set; }
-    public static int SFXVolume { get; private set; }
-    public static bool FullscreenActive { get; private set; }
     
-    public const string CenterOneKey = "CenterOneColour";
-    public const string CenterTwoKey = "CenterTwoColour";
-    public const string CenterThreeKey = "CenterThreeColour";
-    public const string CenterFourKey = "CenterFourColour";
-    public const string CenterFiveKey = "CenterFiveColour";
-    public const string CenterSixKey = "CenterSixColour";
-    public const string FieldOfViewKey = "FieldOfView";
-    public const string AnimationDurationKey = "AnimationDuration";
-    public const string MusicVolumeKey = "MusicVolume";
-    public const string SFXVolumeKey = "SFXVolume";
-    public const string FullscreenActiveKey = "FullscreenActive";
+    static SettingsSaveLoad() {
+        OnAnySettingChanged += PlayerPrefs.Save;
+    }
+    
+    public static event Action OnAnySettingChanged;
+    
+    public static Color CenterOneColour {
+        get => ConvertStringToColour(PlayerPrefs.GetString(CenterOneKey, centerOneDefault));
+        set { 
+            PlayerPrefs.SetString(CenterOneKey, ConvertColourToString(value));
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static Color CenterTwoColour {
+        get => ConvertStringToColour(PlayerPrefs.GetString(CenterTwoKey, centerTwoDefault));
+        set { 
+            PlayerPrefs.SetString(CenterTwoKey, ConvertColourToString(value));
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static Color CenterThreeColour {
+        get => ConvertStringToColour(PlayerPrefs.GetString(CenterThreeKey, centerThreeDefault));
+        set { 
+            PlayerPrefs.SetString(CenterThreeKey, ConvertColourToString(value));
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static Color CenterFourColour {
+        get => ConvertStringToColour(PlayerPrefs.GetString(CenterFourKey, centerFourDefault));
+        set { 
+            PlayerPrefs.SetString(CenterFourKey, ConvertColourToString(value));
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static Color CenterFiveColour {
+        get => ConvertStringToColour(PlayerPrefs.GetString(CenterFiveKey, centerFiveDefault));
+        set { 
+            PlayerPrefs.SetString(CenterFiveKey, ConvertColourToString(value));
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static Color CenterSixColour {
+        get => ConvertStringToColour(PlayerPrefs.GetString(CenterSixKey, centerSixDefault));
+        set { 
+            PlayerPrefs.SetString(CenterSixKey, ConvertColourToString(value));
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static int FieldOfView {
+        get => PlayerPrefs.GetInt(FieldOfViewKey, fieldOfViewDefault);
+        set { 
+            PlayerPrefs.SetInt(FieldOfViewKey, value);
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static int AnimationDuration {
+        get => PlayerPrefs.GetInt(AnimationDurationKey, animationDurationDefault);
+        set { 
+            PlayerPrefs.SetInt(AnimationDurationKey, value);
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static int MusicVolume {
+        get => PlayerPrefs.GetInt(MusicVolumeKey, musicVolumeDefault);
+        set { 
+            PlayerPrefs.SetInt(MusicVolumeKey, value);
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static int SFXVolume {
+        get => PlayerPrefs.GetInt(SFXVolumeKey, sfxVolumeDefault);
+        set { 
+            PlayerPrefs.SetInt(SFXVolumeKey, value);
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    public static bool FullscreenActive {
+        get => ConvertIntToBool(PlayerPrefs.GetInt(FullscreenActiveKey, fullscreenDefault));
+        set {
+            PlayerPrefs.SetInt(FullscreenActiveKey, ConvertBoolToInt(value));
+            OnAnySettingChanged.Invoke();
+        }
+    }
+    
+    private const string CenterOneKey = "CenterOneColour";
+    private const string CenterTwoKey = "CenterTwoColour";
+    private const string CenterThreeKey = "CenterThreeColour";
+    private const string CenterFourKey = "CenterFourColour";
+    private const string CenterFiveKey = "CenterFiveColour";
+    private const string CenterSixKey = "CenterSixColour";
+    private const string FieldOfViewKey = "FieldOfView";
+    private const string AnimationDurationKey = "AnimationDuration";
+    private const string MusicVolumeKey = "MusicVolume";
+    private const string SFXVolumeKey = "SFXVolume";
+    private const string FullscreenActiveKey = "FullscreenActive";
     
     private static readonly string centerOneDefault = ConvertColourToString(Color.yellow);
     private static readonly string centerTwoDefault = ConvertColourToString(Color.red);
@@ -33,80 +106,10 @@ public static class SettingsSaveLoad {
     private static readonly string centerFiveDefault = ConvertColourToString(Color.blue);
     private static readonly string centerSixDefault = ConvertColourToString(Color.white);
     private static readonly int fieldOfViewDefault = 60;
-    private static readonly int aniamtionSpeedDefault = 1;
+    private static readonly int animationDurationDefault = 1;
     private static readonly int musicVolumeDefault = 50;
     private static readonly int sfxVolumeDefault = 50;
     private static readonly int fullscreenDefault = 1;
-    
-    
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void InitialiseData() {
-        // load the data into memory
-        LoadData();
-        
-        // save the data so other scripts can use the Get methods below
-        SaveAllData();
-    }
-    
-    public static void LoadData() {
-        CenterOne = ConvertStringToColour(PlayerPrefs.GetString(CenterOneKey, centerOneDefault));
-        CenterTwo = ConvertStringToColour(PlayerPrefs.GetString(CenterTwoKey, centerTwoDefault));
-        CenterThree = ConvertStringToColour(PlayerPrefs.GetString(CenterThreeKey, centerThreeDefault));
-        CenterFour = ConvertStringToColour(PlayerPrefs.GetString(CenterFourKey, centerFourDefault));
-        CenterFive = ConvertStringToColour(PlayerPrefs.GetString(CenterFiveKey, centerFiveDefault));
-        CenterSix = ConvertStringToColour(PlayerPrefs.GetString(CenterSixKey, centerSixDefault));
-        
-        FieldOfView = PlayerPrefs.GetInt(FieldOfViewKey, fieldOfViewDefault);        
-        AnimationDuration = PlayerPrefs.GetInt(AnimationDurationKey, aniamtionSpeedDefault);
-        MusicVolume = PlayerPrefs.GetInt(MusicVolumeKey, musicVolumeDefault);
-        SFXVolume = PlayerPrefs.GetInt(SFXVolumeKey, sfxVolumeDefault);
-        FullscreenActive = ConvertIntToBool(PlayerPrefs.GetInt(FullscreenActiveKey, fullscreenDefault));
-    }
-    
-    public static string GetStringFromKey(string key) {
-        return PlayerPrefs.GetString(key, "");
-    }
-    
-    public static int GetIntFromKey(string key) {
-        return PlayerPrefs.GetInt(key, 0);
-    }
-    
-    public static float GetFloatFromKey(string key) {
-        return PlayerPrefs.GetFloat(key, 0);
-    }
-    
-    public static void SaveAllData() {
-        PlayerPrefs.SetString(CenterOneKey, ConvertColourToString(CenterOne));
-        PlayerPrefs.SetString(CenterTwoKey, ConvertColourToString(CenterTwo));
-        PlayerPrefs.SetString(CenterThreeKey, ConvertColourToString(CenterThree));
-        PlayerPrefs.SetString(CenterFourKey, ConvertColourToString(CenterFour));
-        PlayerPrefs.SetString(CenterFiveKey, ConvertColourToString(CenterFive));
-        PlayerPrefs.SetString(CenterSixKey, ConvertColourToString(CenterSix));
-        
-        PlayerPrefs.SetInt(FieldOfViewKey, FieldOfView);
-        PlayerPrefs.SetInt(AnimationDurationKey, AnimationDuration);
-        PlayerPrefs.SetInt(MusicVolumeKey, MusicVolume);
-        PlayerPrefs.SetInt(SFXVolumeKey, SFXVolume);
-        PlayerPrefs.SetInt(FullscreenActiveKey, ConvertBoolToInt(FullscreenActive));
-    }
-    
-    public static void SaveData(string key, string value) {
-        PlayerPrefs.SetString(key, value);
-    }
-    
-    public static void SaveData(string key, int value) {
-        PlayerPrefs.SetInt(key, value);
-    }
-    
-    public static void SaveData(string key, float value) {
-        PlayerPrefs.SetFloat(key, value);
-    }
-    
-    public static  void ResetToDefault() {
-        PlayerPrefs.DeleteAll();
-        LoadData();
-        SaveAllData();
-    }
     
     public static int ConvertBoolToInt(bool value) {
         return value ? 1 : 0;
