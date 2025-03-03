@@ -9,7 +9,7 @@ public class CubeVisualiser : MonoBehaviour {
     [SerializeField] private RotationAnimator rotationAnimator;
     [SerializeField] private RectTransform mainUIElements;
     [SerializeField] private RectTransform loadingIcon;
-    InputHandler inputHandler;
+    CubeInputHandler inputHandler;
     Color[] colours;
     Cube cube;
     CFOPSolver solver;
@@ -25,7 +25,7 @@ public class CubeVisualiser : MonoBehaviour {
         }
         
         cube = new Cube();
-        inputHandler = new InputHandler();
+        inputHandler = new CubeInputHandler();
         solver = new CFOPSolver();
         
         SettingsSaveLoad.OnAnySettingChanged += UpdateColoursOfCube;

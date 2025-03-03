@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class ColourPickerMouseActions : MonoBehaviour, IDragHandler, IPointerClickHandler {    
-    [SerializeField] private ColourPickerUpdater colourPicker;
+    [SerializeField] private ColourPicker colourPicker;
     
     public void OnPointerClick(PointerEventData eventData) {
         colourPicker.ChooseColourOnPicker(eventData);

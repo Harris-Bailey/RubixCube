@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Linq;
 
-public class SliderDisplay : MonoBehaviour {
+public class SliderSettings : MonoBehaviour {
     
     [System.Serializable]
     private struct SliderAndOutputDisplay {

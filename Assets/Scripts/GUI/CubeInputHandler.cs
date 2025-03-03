@@ -1,9 +1,7 @@
 using UnityEngine;
 using RubixCube.Core;
-using System;
-using System.Xml;
 
-public class InputHandler {
+public class CubeInputHandler {
 
     public Move GetMoveFromInput() {
         if (!Input.anyKeyDown)

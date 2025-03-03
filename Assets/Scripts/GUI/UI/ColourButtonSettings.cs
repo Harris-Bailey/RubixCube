@@ -1,10 +1,7 @@
-using System;
-using TMPro;
-using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingsUI : MonoBehaviour {
+public class ColourButtonsHandler : MonoBehaviour {
     
     [SerializeField] private Button centerOneButton;
     [SerializeField] private Button centerTwoButton;
@@ -12,7 +9,7 @@ public class SettingsUI : MonoBehaviour {
     [SerializeField] private Button centerFourButton;
     [SerializeField] private Button centerFiveButton;
     [SerializeField] private Button centerSixButton;
-    [SerializeField] private ColourPickerUpdater colourPicker;
+    [SerializeField] private ColourPicker colourPicker;
     [SerializeField] private CanvasGroup[] groupDisabledByColourPicker;
     private Button activeColourButton;
     private Color previousColour;
