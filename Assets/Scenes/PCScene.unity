@@ -27381,9 +27381,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af78686815e5150498443ef345bdfcac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  image: {fileID: 0}
+  image: {fileID: 1415600455}
   hueScroller: {fileID: 1113996935}
-  indicator: {fileID: 0}
+  indicator: {fileID: 486556675}
 --- !u!222 &1797680855
 CanvasRenderer:
   m_ObjectHideFlags: 0
