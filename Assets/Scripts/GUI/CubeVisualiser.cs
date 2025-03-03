@@ -24,18 +24,23 @@ public class CubeVisualiser : MonoBehaviour {
             bitsRotatedByRotationMask[i] = RotationData.BitsMovedByRotationMask[i] | centersOmittedThatRotate;
         }
         
-        colours = new Color[] {
-            SettingsSaveLoad.CenterOne,
-            SettingsSaveLoad.CenterTwo,
-            SettingsSaveLoad.CenterThree,
-            SettingsSaveLoad.CenterFour,
-            SettingsSaveLoad.CenterFive,
-            SettingsSaveLoad.CenterSix,
-        };
-        
         cube = new Cube();
         inputHandler = new InputHandler();
         solver = new CFOPSolver();
+        
+        SettingsSaveLoad.OnAnySettingChanged += UpdateColoursOfCube;
+        UpdateColoursOfCube();
+    }
+    
+    private void UpdateColoursOfCube() {
+        colours = new Color[] {
+            SettingsSaveLoad.CenterOneColour,
+            SettingsSaveLoad.CenterTwoColour,
+            SettingsSaveLoad.CenterThreeColour,
+            SettingsSaveLoad.CenterFourColour,
+            SettingsSaveLoad.CenterFiveColour,
+            SettingsSaveLoad.CenterSixColour,
+        };
         RenderCube();
     }
     

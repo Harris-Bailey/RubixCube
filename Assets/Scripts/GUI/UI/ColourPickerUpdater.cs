@@ -5,13 +5,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ColourPickerUpdater : MonoBehaviour {
-    public Action<Color> OnColourPicked;
     [SerializeField] private RawImage colourPickerImage;
     [SerializeField] private Scrollbar hueScroller;
     [SerializeField] private RectTransform pickerIcon;
-    private int pickerTextureDimensions = 16;
     private float currentHue = 0, currentSaturation = 0, currentBrightness = 0;
     private float colourPickerWidth, colourPickerHeight;
+    private readonly int pickerTextureDimensions = 16;
 
     void Awake() {
         colourPickerWidth = (int)colourPickerImage.rectTransform.rect.width;
@@ -19,29 +18,20 @@ public class ColourPickerUpdater : MonoBehaviour {
         
         hueScroller.onValueChanged.AddListener((value) => {
             UpdateSaturationValueTexture(value);
-            OnColourPicked(Color.HSVToRGB(currentHue, currentSaturation, currentBrightness));
         });
         UpdateSaturationValueTexture(0);
         UpdateHueScrollerTexture();
     }
     
-    private void PositionIconFromCurrents() {
-        // saturation is a value 0 to 1, so multiply it by the width of the colour picker to get the position from 0 to height
-        float xPosition = currentSaturation * colourPickerWidth;
-        // brightness is a value 0 to 1, so multiply it by the height of the colour picker to get the position from 0 to width
-        float yPosition = currentBrightness * colourPickerHeight;
-        
-        // need the origin to be at the bottom left so the anchor should be set to bottom left
-        pickerIcon.anchoredPosition = new Vector2(xPosition, yPosition);
+    public Color GetCurrentColour() {
+        return Color.HSVToRGB(currentHue, currentSaturation, currentBrightness);
     }
     
-    public void ChooseColourOnPicker(Color colour) {
+    public void SetInitialColourOnPicker(Color colour) {
         Color.RGBToHSV(colour, out currentHue, out currentSaturation, out currentBrightness);
         hueScroller.value = currentHue;
         
         PositionIconFromCurrents();
-        
-        OnColourPicked(colour);
     }
     
     public void ChooseColourOnPicker(PointerEventData eventData) {
@@ -68,16 +58,30 @@ public class ColourPickerUpdater : MonoBehaviour {
             return;
         }
         
+        Color colour = new Color(redValue, greenValue, blueValue);
         // convert the rgb values to hsv
-        Color.RGBToHSV(new Color(redValue, greenValue, blueValue), out currentHue, out currentSaturation, out currentBrightness);
+        Color.RGBToHSV(colour, out currentHue, out currentSaturation, out currentBrightness);
         
         // the hue is between 0 and 1 so can directly set that to the slider value
         hueScroller.value = currentHue;
         
         PositionIconFromCurrents();
+    }
+    
+    private void PositionIconFromCurrents() {
+        // saturation is a value 0 to 1, multiply it by the width of the colour picker to get the position from 0 to height
+        float xPosition = currentSaturation * colourPickerWidth;
+        // brightness is a value 0 to 1, multiply it by the height of the colour picker to get the position from 0 to width
+        float yPosition = currentBrightness * colourPickerHeight;
         
-        // return the chosen colour
-        return;
+        // to keep both the positions inside the bounds of the box, the positions need
+        // subtracting by their respective unit (height or width), and then offset by half of those units
+        // this only works if the pivots are set to center on the pickerIcon
+        xPosition = xPosition - pickerIcon.rect.width + (pickerIcon.rect.width / 2);
+        yPosition = yPosition - pickerIcon.rect.height + (pickerIcon.rect.height / 2);
+        
+        // need the origin to be at the bottom left so the anchor should be set to bottom left
+        pickerIcon.anchoredPosition = new Vector2(xPosition, yPosition);
     }
     
     private void UpdateOutputImageColour(PointerEventData eventData) {
@@ -87,31 +91,27 @@ public class ColourPickerUpdater : MonoBehaviour {
         
         // from the center, the x value goes from left to right, from -width/2 to width/2
         // so need to offset it with the half width to get it from 0 to the width and then round it
-        int adjustedXPosition = (int)Mathf.Round(localPositionFromCenter.x + colourPickerWidth / 2);
-        // clamp it so it can't exceed the object in the left or right directions
-        adjustedXPosition = (int)Mathf.Clamp(adjustedXPosition, 0, colourPickerWidth);
+        float adjustedXPosition = localPositionFromCenter.x + colourPickerWidth / 2;
+        // clamp it so the bounds of the icon can't exceed the bounds of the picker in the left or right directions
+        adjustedXPosition = Mathf.Clamp(adjustedXPosition, 0 + (pickerIcon.rect.width / 2), colourPickerWidth - (pickerIcon.rect.width / 2));
         
         // from the center the y value goes bottom to top, from -height/2 to height/2
         // so need to offset by half height which gets the values from 0 to height and then round it
-        int adjustedYPosition = (int)Mathf.Round(localPositionFromCenter.y + colourPickerHeight / 2);
-        // clamp it so it can't exceed the object in the up or down directions
-        adjustedYPosition = (int)Mathf.Clamp(adjustedYPosition, 0, colourPickerHeight);
+        float adjustedYPosition = localPositionFromCenter.y + colourPickerHeight / 2;
+        //  clamp it so the bounds of the icon can't exceed the bounds of the picker in the up or down directions
+        adjustedYPosition = Mathf.Clamp(adjustedYPosition, 0 + (pickerIcon.rect.height / 2), colourPickerWidth - (pickerIcon.rect.height / 2));
         
         
-        Vector2Int localPositionFromBottomLeft = new Vector2Int(adjustedXPosition, adjustedYPosition);
+        Vector2 localPositionFromBottomLeft = new Vector2(adjustedXPosition, adjustedYPosition);
+        
         // proportion of the x position in relation to the colour picker and its width
         // the more the x position approaches the width the more saturation, the more the x position approaches 0 the less the saturation
-        float currentSaturation = localPositionFromBottomLeft.x / colourPickerWidth;
-
-        // proportion of the y position in relation to the colour picker and its height
-        // the more the y position approaches the height the more the brightness, the more the y position approaches 0 the less the brightness
+        // the same is said for the brightness, except that occurs relative to the height
+        currentSaturation = localPositionFromBottomLeft.x / colourPickerWidth;
         currentBrightness = localPositionFromBottomLeft.y / colourPickerHeight;
     
         // need the origin to be at the bottom left so the anchor should be set to bottom left
         pickerIcon.anchoredPosition = new Vector2(adjustedXPosition, adjustedYPosition);
-        
-        // invoke the event for when a colour is chosen
-        OnColourPicked(Color.HSVToRGB(currentHue, currentSaturation, currentBrightness));
     }
     
     private void UpdateHueScrollerTexture() {

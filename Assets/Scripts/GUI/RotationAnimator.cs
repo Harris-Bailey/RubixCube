@@ -16,7 +16,7 @@ public class RotationAnimator : MonoBehaviour {
     private IEnumerator Animate(Move move, ulong rotationMask, Action callback) {
         Transform[] originalParents = AssignToPivot(rotationMask);
         
-        float duration = SettingsSaveLoad.GetIntFromKey(SettingsSaveLoad.AnimationDurationKey);
+        float duration = SettingsSaveLoad.AnimationDuration;
         if (move.rotationTypeIndex == Move.DoubleRotation)
             duration *= 2;
         

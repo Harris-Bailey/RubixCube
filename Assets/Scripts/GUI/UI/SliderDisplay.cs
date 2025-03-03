@@ -4,19 +4,40 @@ using TMPro;
 using System.Linq;
 
 public class SliderDisplay : MonoBehaviour {
-    [SerializeField] private string nameKey;
-    [SerializeField] private Slider slider;
-    [SerializeField] private TextMeshProUGUI sliderValue;
     
-    private void Awake() {        
-        slider.onValueChanged.AddListener(SetSliderText);
-        
-        int savedValue = SettingsSaveLoad.GetIntFromKey(nameKey);
-        slider.value = savedValue;
+    [System.Serializable]
+    private struct SliderAndOutputDisplay {
+        public Slider slider;
+        public TextMeshProUGUI sliderOutputDisplay;
     }
     
-    private void SetSliderText(float value) {
-        sliderValue.text = value.ToString();
-        SettingsSaveLoad.SaveData(nameKey, (int)value);
+    [SerializeField] private SliderAndOutputDisplay fieldOfView;
+    [SerializeField] private SliderAndOutputDisplay musicVolume;
+    [SerializeField] private SliderAndOutputDisplay sfxVolume;
+    [SerializeField] private SliderAndOutputDisplay animationDuration;
+    
+    private void Awake() {        
+        fieldOfView.slider.onValueChanged.AddListener((value) => {
+            fieldOfView.sliderOutputDisplay.text = value.ToString();
+            SettingsSaveLoad.FieldOfView = (int)value;
+        });
+        musicVolume.slider.onValueChanged.AddListener((value) => {
+            musicVolume.sliderOutputDisplay.text = value.ToString();
+            SettingsSaveLoad.MusicVolume = (int)value;
+        });
+        sfxVolume.slider.onValueChanged.AddListener((value) => {
+            sfxVolume.sliderOutputDisplay.text = value.ToString();
+            SettingsSaveLoad.SFXVolume = (int)value;
+        });
+        animationDuration.slider.onValueChanged.AddListener((value) => {
+            animationDuration.sliderOutputDisplay.text = value.ToString();
+            SettingsSaveLoad.AnimationDuration = (int)value;
+        });
+        
+        // changing the value like this automatically calls the onValueChanged delegate
+        fieldOfView.slider.value = SettingsSaveLoad.FieldOfView;
+        musicVolume.slider.value = SettingsSaveLoad.MusicVolume;
+        sfxVolume.slider.value = SettingsSaveLoad.SFXVolume;
+        animationDuration.slider.value = SettingsSaveLoad.AnimationDuration;
     }
 }
